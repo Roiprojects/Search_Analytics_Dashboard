@@ -52,8 +52,18 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-        <div className="w-8 h-8 rounded-full border-4 border-zinc-200 border-t-zinc-800 animate-spin dark:border-zinc-800 dark:border-t-zinc-200" />
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 px-4 py-8 flex items-center justify-center">
+        <div className="w-full max-w-5xl space-y-4">
+          <div className="h-20 bg-zinc-200 dark:bg-zinc-800 rounded-3xl animate-pulse w-1/2" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2 h-64 bg-zinc-200 dark:bg-zinc-800 rounded-3xl animate-pulse" />
+            <div className="h-64 bg-zinc-200 dark:bg-zinc-800 rounded-3xl animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2 h-80 bg-zinc-200 dark:bg-zinc-800 rounded-3xl animate-pulse" />
+            <div className="h-80 bg-zinc-200 dark:bg-zinc-800 rounded-3xl animate-pulse" />
+          </div>
+        </div>
       </div>
     );
   }
