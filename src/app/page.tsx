@@ -158,7 +158,7 @@ export default function Home() {
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value: number) => [`${value.toLocaleString()} searches`, 'Volume']}
+                  formatter={(value: any) => [`${Number(value).toLocaleString()} searches`, 'Volume']}
                   contentStyle={{ 
                     borderRadius: '16px', 
                     border: '1px solid rgba(255,255,255,0.1)', 
