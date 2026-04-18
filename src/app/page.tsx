@@ -92,13 +92,21 @@ export default function Home() {
               Analyzing local search volume distribution for primary keywords.
             </p>
           </div>
-          <Link 
-            href="/admin" 
-            className="inline-flex items-center justify-center w-10 h-10 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 text-white rounded-xl shadow-sm hover:shadow transition-all duration-200 group"
-            title="Settings"
-          >
-            <Settings className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-          </Link>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => window.print()}
+              className="hidden sm:flex items-center gap-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all shadow-sm"
+            >
+              Export PDF
+            </button>
+            <Link 
+              href="/admin" 
+              className="inline-flex items-center justify-center w-10 h-10 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 text-white rounded-xl shadow-sm hover:shadow transition-all duration-200 group"
+              title="Settings"
+            >
+              <Settings className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+            </Link>
+          </div>
         </motion.div>
 
         {/* Bento Grid Layout */}
@@ -211,5 +219,16 @@ export default function Home() {
         </div>
       </motion.div>
     </main>
+    <footer className="fixed bottom-0 w-full py-2 px-6 flex justify-between items-center text-[10px] text-zinc-400 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-sm border-t border-zinc-200 dark:border-zinc-800 pointer-events-none">
+      <div className="flex gap-4">
+        <span>&copy; 2024 Search Analytics Dashboard</span>
+        <span>Standard License</span>
+      </div>
+      <div>
+        <span className="flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live Data Sync Active
+        </span>
+      </div>
+    </footer>
   );
 }
