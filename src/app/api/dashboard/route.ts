@@ -1,34 +1,72 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-// Note: In Next.js App Router, using fs requires __dirname or process.cwd()
-const dataFilePath = path.join(process.cwd(), 'src', 'data', 'db.json');
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function GET() {
   try {
-    const fileContents = fs.readFileSync(dataFilePath, 'utf8');
-    const data = JSON.parse(fileContents);
-    return NextResponse.json(data);
+    // Fetch keyword from settings
+    const { data: settings, error: settingsError } = await supabase
+      .from('search_dashboard_settings')
+      .select('keyword')
+      .order('id', { ascending: true })
+      .limit(1)
+      .single();
+
+    if (settingsError && settingsError.code !== 'PGRST116') {
+      throw settingsError;
+    }
+
+    // Fetch locations
+    const { data: locations, error: locationsError } = await supabase
+      .from('search_dashboard_locations')
+      .select('name, searches')
+      .order('id', { ascending: true });
+
+    if (locationsError) throw locationsError;
+
+    return NextResponse.json({
+      keyword: settings?.keyword || "Enter Keyword",
+      locations: locations || []
+    });
   } catch (error) {
-    console.error("Error reading db.json:", error);
-    return NextResponse.json({ error: "Failed to read data" }, { status: 500 });
+    console.error("Error fetching from Supabase:", error);
+    return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const newData = await request.json();
-    
-    // Validate simple data structure
-    if (!newData.keyword || !Array.isArray(newData.locations)) {
-      return NextResponse.json({ error: "Invalid data format" }, { status: 400 });
+    const { keyword, locations } = await request.json();
+
+    // 1. Update or Insert keyword (using id 1 for singleton record)
+    const { error: settingsError } = await supabase
+      .from('search_dashboard_settings')
+      .upsert({ id: 1, keyword });
+
+    if (settingsError) throw settingsError;
+
+    // 2. Synchronize locations (Delete and re-insert is clearest for dynamic lists)
+    const { error: deleteError } = await supabase
+      .from('search_dashboard_locations')
+      .delete()
+      .neq('id', 0); // Delete all rows where id exists
+
+    if (deleteError) throw deleteError;
+
+    if (locations && locations.length > 0) {
+      const { error: insertError } = await supabase
+        .from('search_dashboard_locations')
+        .insert(locations.map((l: any) => ({ name: l.name, searches: l.searches })));
+
+      if (insertError) throw insertError;
     }
 
-    fs.writeFileSync(dataFilePath, JSON.stringify(newData, null, 2), 'utf8');
-    return NextResponse.json({ success: true, data: newData });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error writing db.json:", error);
+    console.error("Error saving to Supabase:", error);
     return NextResponse.json({ error: "Failed to save data" }, { status: 500 });
   }
 }
