@@ -54,9 +54,10 @@ export async function POST(request: Request) {
     const { locations, ...settings } = body;
 
     // 1. Update or Insert settings (using id 1 for singleton record)
+    const { id: _, ...settingsWithoutId } = settings as any;
     const { error: settingsError } = await supabase
       .from('search_dashboard_settings')
-      .upsert({ id: 1, ...settings });
+      .upsert({ id: 1, ...settingsWithoutId });
 
     if (settingsError) throw settingsError;
 
