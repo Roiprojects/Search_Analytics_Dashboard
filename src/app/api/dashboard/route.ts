@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     const { error: deleteError } = await supabase
       .from('search_dashboard_locations')
       .delete()
-      .neq('id', 0);
+      .not('id', 'is', null);
 
     if (deleteError) throw deleteError;
 
