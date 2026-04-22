@@ -63,15 +63,25 @@ export default function AdminPanel() {
       const res = await fetch('/api/dashboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+          ...data,
+          locations: data.locations.map(l => ({
+            ...l,
+            searches: Number(l.searches) 
+          }))
+        })
       });
       if (res.ok) {
         setStatus('success');
+        alert("✅ Dashboard successfully updated!");
         setTimeout(() => setStatus('idle'), 3000);
       } else {
+        const err = await res.json();
+        alert("❌ Failed to save: " + (err.error || "Server error"));
         setStatus('error');
       }
     } catch (e) {
+      alert("❌ Error: Could not reach the server.");
       setStatus('error');
     }
     setSaving(false);

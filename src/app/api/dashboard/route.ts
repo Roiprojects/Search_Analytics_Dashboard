@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     const { error: deleteError } = await supabase
       .from('search_dashboard_locations')
       .delete()
-      .not('id', 'is', null);
+      .gt('id', 0);
 
     if (deleteError) throw deleteError;
 
@@ -77,8 +77,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving to Supabase:", error);
-    return NextResponse.json({ error: "Failed to save data" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to save data" }, { status: 500 });
   }
 }
